@@ -16,16 +16,20 @@ package yonsei_church.yonsei.tv;
 
 import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
 
+import yonsei_church.yonsei.tv.data.VideoItem;
+
 public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
 
     @Override
     protected void onBindDescription(ViewHolder viewHolder, Object item) {
-        Movie movie = (Movie) item;
+
+        VideoItem movie = (VideoItem) item;
 
         if (movie != null) {
-            viewHolder.getTitle().setText(movie.getTitle());
-            viewHolder.getSubtitle().setText(movie.getStudio());
-            viewHolder.getBody().setText(movie.getDescription());
+            viewHolder.getBody().setText(movie.getTitle());
+//            viewHolder.getTitle().setText(movie.getTitle());
+            /*viewHolder.getSubtitle().setText(movie.getTitle());
+            viewHolder.getBody().setText(movie.getTitle());*/
         }
     }
 }

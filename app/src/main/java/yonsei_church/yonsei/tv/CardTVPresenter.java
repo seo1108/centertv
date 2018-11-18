@@ -68,7 +68,7 @@ public class CardTVPresenter extends Presenter {
         Log.d(TAG, "onBindViewHolder");
         if (video.getThumbnail() != null) {
             cardView.setTitleText(video.getTitle());
-            cardView.setContentText(video.getTitle());
+            //cardView.setContentText(video.getTitle());
             cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
             Glide.with(viewHolder.view.getContext())
                     .load(video.getThumbnail())

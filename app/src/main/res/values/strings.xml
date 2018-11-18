@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">centertv</string>
+    <string name="app_name">연세중앙교회티비</string>
     <string name="browse_title">연세중앙교회</string>
     <string name="related_movies">Related Videos</string>
     <string name="grid_view">Grid View</string>
@@ -7,6 +7,7 @@
     <string name="personal_settings">Personal Settings</string>
     <string name="watch_trailer_1">Watch trailer</string>
     <string name="watch_trailer_2">FREE</string>
+    <string name="watch_video">동영상 재생</string>
     <string name="rent_1">Rent By Day</string>
     <string name="rent_2">From $1.99</string>
     <string name="buy_1">Buy and Own</string>

@@ -15,7 +15,6 @@
 package yonsei_church.yonsei.tv;
 
 import android.content.Intent;
-import android.database.Observable;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -55,20 +54,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import retrofit.RetrofitError;
-import retrofit.http.Query;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import yonsei_church.yonsei.tv.adapter.PaginationAdapter;
 import yonsei_church.yonsei.tv.api.APIClient;
 import yonsei_church.yonsei.tv.api.APIInterface;
-import yonsei_church.yonsei.tv.api.APIService;
-import yonsei_church.yonsei.tv.api.CommonAPI;
-import yonsei_church.yonsei.tv.api.CommonCallback;
-import yonsei_church.yonsei.tv.app.AppConst;
 import yonsei_church.yonsei.tv.data.TvMenuListModel;
 import yonsei_church.yonsei.tv.data.TvMenuMainItem;
 import yonsei_church.yonsei.tv.data.TvMenuSubItem;
@@ -174,7 +164,7 @@ public class MainFragment extends BrowseFragment {
 
     private void setupUIElements() {
         setBadgeDrawable(getActivity().getResources().getDrawable(
-                R.drawable.ic_logo));
+                R.drawable.ic_launcher));
         setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent
         // over title
         setHeadersState(HEADERS_ENABLED);
@@ -230,11 +220,8 @@ public class MainFragment extends BrowseFragment {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
-            Toast.makeText(getActivity(), "Implement your own in-app view", Toast.LENGTH_LONG)
-                    .show();
-            if (item instanceof Movie) {
-                Movie movie = (Movie) item;
-                Log.d(TAG, "Item: " + item.toString());
+            if (item instanceof VideoItem) {
+                VideoItem movie = (VideoItem) item;
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
                 intent.putExtra(DetailsActivity.MOVIE, movie);
 
@@ -262,36 +249,12 @@ public class MainFragment extends BrowseFragment {
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
-
-            /*if (item instanceof Movie) {
-                mBackgroundUri = ((Movie) item).getBackgroundImageUrl();
-                startBackgroundTimer();
-            }*/
-           /* Toast.makeText(getActivity(), ((TvMenuMainItem) item).getCategory() + " Implement your own in-app item", Toast.LENGTH_LONG)
-                    .show();
-            */
-            if ((Object)row instanceof TvMenuMainItem) {
-                Toast.makeText(getActivity(), ((TvMenuMainItem) item).getCategory() + " Implement your own in-app itemq", Toast.LENGTH_LONG)
-                        .show();
-            }
-
-
-            if (item instanceof TvMenuMainItem) {
-                Toast.makeText(getActivity(), ((TvMenuMainItem) item).getCategory() + " Implement your own in-app item", Toast.LENGTH_LONG)
-                        .show();
-            }
-
             if (item instanceof VideoItem) {
-                Toast.makeText(getActivity(), ((VideoItem) item).getKey() + " Implement your own in-app item 2", Toast.LENGTH_LONG)
-                        .show();
-
                 final ListRow listRow = (ListRow) row;
-                //final ArrayObjectAdapter currentRowAdapter = (ArrayObjectAdapter) listRow.getAdapter();
                 updateRowAdapter = (ArrayObjectAdapter) listRow.getAdapter();
                 int selectedIndex = updateRowAdapter.indexOf(item);
                 if (selectedIndex != -1 && (updateRowAdapter.size() - 1) == selectedIndex ) {
                     // The last item was selected
-                    Log.d("마지막", " 마지막 아이템 " + mKey);
                     mKey = ((VideoItem) item).getKey();
                     mPage =  ((VideoItem) item).getPage();
                     Message msg = getTvListHandler.obtainMessage();
@@ -311,7 +274,6 @@ public class MainFragment extends BrowseFragment {
                 public void onResponse(Call<List<VideoItem>> call, Response<List<VideoItem>> response) {
                     videoList = response.body();
                     for (int i = 0; i < videoList.size(); i++) {
-                        Log.d("LISTLIST", videoList.get(i).getUrl());
                         updateRowAdapter.add(videoList.get(i));
                         videoList.get(i).setKey(mKey);
                         videoList.get(i).setPage(curPage+"");
@@ -323,41 +285,7 @@ public class MainFragment extends BrowseFragment {
 
                 }
             });
-
-
-/*            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Log.d("GETGETGET", mKey);
-                        apiInterface = APIClient.getClient().create(APIInterface.class);
-                        Call<List<VideoItem>> call = apiInterface.getTvList("010535483624931", "2", mKey);
-                        List<VideoItem> result = call.execute().body();
-
-                        if (null != result && result.size() > 0) {
-                            for (int k = 0; k < result.size(); k++) {
-                                updateRowAdapter.add(result.get(k));
-                                result.get(k).setKey(mKey);
-
-                                Log.d("GETGETGETTTL", result.get(k).getTitle());
-                            }
-                        }
-
-                        Log.d("GETGETGETDONE", mKey);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-
-            t.start();
-
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
- */       }
+        }
     };
 
     private class UpdateBackgroundTask extends TimerTask {
@@ -434,12 +362,7 @@ public class MainFragment extends BrowseFragment {
             @Override
             public void onResponse(Call<List<TvMenuMainItem>> call, Response<List<TvMenuMainItem>> response) {
                 menuList = response.body();
-                for (int i = 0; i < menuList.size(); i++) {
-                    Log.d("LISTLIST", menuList.get(i).getCategory());
-                }
 
-                //requestVideo(menuList, "", "", "");
-                //loadRows();
                 loadTVRows();
             }
             @Override
@@ -458,11 +381,7 @@ public class MainFragment extends BrowseFragment {
             @Override
             public void onResponse(Call<List<VideoItem>> call, Response<List<VideoItem>> response) {
                 videoList = response.body();
-                for (int i = 0; i < videoList.size(); i++) {
-                    Log.d("LISTLIST", videoList.get(i).getUrl());
-                }
 
-                //setCaterotys(menuList);
                 loadTVRows();
             }
             @Override
@@ -515,7 +434,7 @@ public class MainFragment extends BrowseFragment {
             rowsAdapter.add(new ListRow(header, cardRowAdapter));
             headerIdx++;
 
-            if (headerIdx > 10) break;
+            /*if (headerIdx > 3) break;*/
 
             if (null != menuList.get(i).getItems() && menuList.get(i).getItems().size() > 0) {
                 for (int j = 0; j < menuList.get(i).getItems().size(); j++) {
@@ -528,7 +447,6 @@ public class MainFragment extends BrowseFragment {
                             @Override
                             public void run() {
                                 try {
-                                    Log.d("GETGETGET", key2);
                                     apiInterface = APIClient.getClient().create(APIInterface.class);
                                     Call<List<VideoItem>> call = apiInterface.getTvList("010535483624931", "1", key2);
                                     List<VideoItem> result = call.execute().body();
@@ -540,15 +458,12 @@ public class MainFragment extends BrowseFragment {
                                             cardSubRowAdapter.add(result.get(k));
                                             result.get(k).setKey(key2);
                                             result.get(k).setPage("1");
-                                            Log.d("GETGETGETTTL", result.get(k).getTitle() + " KEY : " + result.get(k).getKey());
                                         }
 
 
                                         //new NetworkCall().execute(call);
                                         rowsAdapter.add(new ListRow(subHeader, cardSubRowAdapter));
                                     }
-
-                                    Log.d("GETGETGETDONE", key2);
                                 } catch (Exception e) {
 
                                     e.printStackTrace();
@@ -570,7 +485,6 @@ public class MainFragment extends BrowseFragment {
                     }
                 }
             } else {
-                Log.d("XXXXXXXX", "XXXXXXXXXXXXXXXX");
             }
         }
 

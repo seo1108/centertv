@@ -21,6 +21,15 @@ import android.support.v17.leanback.app.VideoSupportFragmentGlueHost;
 import android.support.v17.leanback.media.MediaPlayerAdapter;
 import android.support.v17.leanback.media.PlaybackTransportControlGlue;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
+import android.util.Log;
+
+import java.security.KeyStore;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+
+import yonsei_church.yonsei.tv.api.VimeoAPI;
+import yonsei_church.yonsei.tv.data.VideoItem;
 
 /**
  * Handles video playback with media controls.
@@ -33,7 +42,31 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Movie movie =
+        final VideoItem movie =
+                (VideoItem) getActivity().getIntent().getSerializableExtra(DetailsActivity.MOVIE);
+
+        VideoSupportFragmentGlueHost glueHost =
+                new VideoSupportFragmentGlueHost(PlaybackVideoFragment.this);
+
+        MediaPlayerAdapter playerAdapter = new MediaPlayerAdapter(getActivity());
+        playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE);
+
+        mTransportControlGlue = new PlaybackTransportControlGlue<>(getActivity(), playerAdapter);
+        mTransportControlGlue.setHost(glueHost);
+        mTransportControlGlue.setTitle(movie.getTitle());
+        //mTransportControlGlue.setSubtitle(movie.getTitle());
+        mTransportControlGlue.playWhenPrepared();
+        String videoId = movie.getUrl().substring(movie.getUrl().lastIndexOf("/") + 1);
+        Log.d("VIMEOPLAYER", videoId + "__" + movie.getUrl());
+
+        String playurl = VimeoAPI.vimeoUrl(videoId);
+
+        playerAdapter.setDataSource(Uri.parse(playurl));
+
+
+        //playerAdapter.setDataSource(Uri.parse("https://player.vimeo.com/external/296317003.sd.mp4?s=906fbda76388c0e6974dc95d98ae7c1863be49bd&profile_id=164"));
+
+       /* final Movie movie =
                 (Movie) getActivity().getIntent().getSerializableExtra(DetailsActivity.MOVIE);
 
         VideoSupportFragmentGlueHost glueHost =
@@ -47,7 +80,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         mTransportControlGlue.setTitle(movie.getTitle());
         mTransportControlGlue.setSubtitle(movie.getDescription());
         mTransportControlGlue.playWhenPrepared();
-        playerAdapter.setDataSource(Uri.parse(movie.getVideoUrl()));
+        playerAdapter.setDataSource(Uri.parse(movie.getVideoUrl()));*/
     }
 
     @Override

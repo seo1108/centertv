@@ -33,4 +33,14 @@ public class APIClient {
 
         return retrofit;
     }
+
+    public static Retrofit getVimeoClient(String vimeoId) {
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl("http://player.vimeo.com/video/" + vimeoId + "/config")
+                .addCallAdapterFactory(SynchronousCallAdapterFactory.create())
+                .build();
+
+        return retrofit;
+    }
 }

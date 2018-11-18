@@ -2,7 +2,9 @@ package yonsei_church.yonsei.tv.data;
 
 import com.google.gson.annotations.SerializedName;
 
-public class VideoItem {
+import java.io.Serializable;
+
+public class VideoItem implements Serializable {
     @SerializedName("thumbnail")
     private String thumbnail;
 
