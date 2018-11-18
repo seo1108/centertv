@@ -15,6 +15,9 @@ public class VideoItem {
     @SerializedName("key")
     private String key;
 
+    @SerializedName("page")
+    private String page;
+
     public String getThumbnail() {
         return thumbnail;
     }
@@ -33,5 +36,13 @@ public class VideoItem {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getPage() {
+        return page;
+    }
+
+    public void setPage(String page) {
+        this.page = page;
     }
 }

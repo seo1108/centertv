@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
@@ -97,6 +98,9 @@ public class MainFragment extends BrowseFragment {
     List<VideoItem> videoList = null;
 
     ArrayObjectAdapter rowsAdapter;
+    ArrayObjectAdapter updateRowAdapter;
+    private String mKey;
+    private String mPage;
 /*    ArrayObjectAdapter rowsAdapter;
     CardTVPresenter cardPresenter;
     ArrayObjectAdapter cardRowAdapter;
@@ -278,11 +282,83 @@ public class MainFragment extends BrowseFragment {
             }
 
             if (item instanceof VideoItem) {
-                Toast.makeText(getActivity(), ((VideoItem) item).getTitle() + " Implement your own in-app item 2", Toast.LENGTH_LONG)
+                Toast.makeText(getActivity(), ((VideoItem) item).getKey() + " Implement your own in-app item 2", Toast.LENGTH_LONG)
                         .show();
+
+                final ListRow listRow = (ListRow) row;
+                //final ArrayObjectAdapter currentRowAdapter = (ArrayObjectAdapter) listRow.getAdapter();
+                updateRowAdapter = (ArrayObjectAdapter) listRow.getAdapter();
+                int selectedIndex = updateRowAdapter.indexOf(item);
+                if (selectedIndex != -1 && (updateRowAdapter.size() - 1) == selectedIndex ) {
+                    // The last item was selected
+                    Log.d("마지막", " 마지막 아이템 " + mKey);
+                    mKey = ((VideoItem) item).getKey();
+                    mPage =  ((VideoItem) item).getPage();
+                    Message msg = getTvListHandler.obtainMessage();
+                    getTvListHandler.sendMessage(msg);
+                }
             }
         }
     }
+
+    final Handler getTvListHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            final int curPage = Integer.parseInt(mPage) + 1;
+            apiInterface = APIClient.getClient().create(APIInterface.class);
+            Call<List<VideoItem>> call = apiInterface.getTvList("010535483624931", curPage+"", mKey);
+            call.enqueue(new retrofit2.Callback<List<VideoItem>>() {
+                @Override
+                public void onResponse(Call<List<VideoItem>> call, Response<List<VideoItem>> response) {
+                    videoList = response.body();
+                    for (int i = 0; i < videoList.size(); i++) {
+                        Log.d("LISTLIST", videoList.get(i).getUrl());
+                        updateRowAdapter.add(videoList.get(i));
+                        videoList.get(i).setKey(mKey);
+                        videoList.get(i).setPage(curPage+"");
+                    }
+
+                }
+                @Override
+                public void onFailure(Call<List<VideoItem>> call, Throwable t) {
+
+                }
+            });
+
+
+/*            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Log.d("GETGETGET", mKey);
+                        apiInterface = APIClient.getClient().create(APIInterface.class);
+                        Call<List<VideoItem>> call = apiInterface.getTvList("010535483624931", "2", mKey);
+                        List<VideoItem> result = call.execute().body();
+
+                        if (null != result && result.size() > 0) {
+                            for (int k = 0; k < result.size(); k++) {
+                                updateRowAdapter.add(result.get(k));
+                                result.get(k).setKey(mKey);
+
+                                Log.d("GETGETGETTTL", result.get(k).getTitle());
+                            }
+                        }
+
+                        Log.d("GETGETGETDONE", mKey);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+
+            t.start();
+
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+ */       }
+    };
 
     private class UpdateBackgroundTask extends TimerTask {
 
@@ -462,7 +538,9 @@ public class MainFragment extends BrowseFragment {
                                     if (null != result && result.size() > 0) {
                                         for (int k = 0; k < result.size(); k++) {
                                             cardSubRowAdapter.add(result.get(k));
-                                            Log.d("GETGETGETTTL", result.get(k).getTitle());
+                                            result.get(k).setKey(key2);
+                                            result.get(k).setPage("1");
+                                            Log.d("GETGETGETTTL", result.get(k).getTitle() + " KEY : " + result.get(k).getKey());
                                         }
 
 
