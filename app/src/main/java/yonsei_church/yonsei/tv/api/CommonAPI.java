@@ -19,4 +19,7 @@ public interface CommonAPI {
 
     @GET("/tv_list.php")
     Call<List<VideoItem>> getTvList();
+
+    @GET("/tv_menu_mov.php")
+    Call<List<TvMenuMainItem>> getTvMenuMovMainItem();
 }

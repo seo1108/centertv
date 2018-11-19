@@ -16,16 +16,20 @@ public interface APIInterface {
     @GET("tv_menu.php")
     Call<List<TvMenuMainItem>> getTvMenuMainItemList(@Query("mt") String mt);
 
+    @GET("tv_menu_mov.php")
+    Call<List<TvMenuMainItem>> getTvMenuMovMainItemList(@Query("mt") String mt);
+
     @GET("tv_list.php")
     Call<List<VideoItem>> getTvList(@Query("mt") String mt
-            , @Query("page") String page
+            , @Query("pg") String pg
             , @Query("key") String key);
    /* List<VideoItem> getTvList(@Query("mt") String mt
             , @Query("page") String page
             , @Query("key") String key);*/
 
+
     @GET("tv_list.php")
     String getTvListSync(@Query("mt") String mt
-            , @Query("page") String page
+            , @Query("pg") String pg
             , @Query("key") String key);
 }

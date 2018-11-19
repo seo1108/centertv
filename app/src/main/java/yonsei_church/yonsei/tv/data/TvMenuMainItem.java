@@ -15,7 +15,7 @@ public class TvMenuMainItem {
     private String livebr;
 
     @SerializedName("items")
-    private List<TvMenuSubItem> items;
+    private List<TvMenuMovSubItem> items;
 
     public String getCategory() {
         return category;
@@ -29,7 +29,7 @@ public class TvMenuMainItem {
         return livebr;
     }
 
-    public List<TvMenuSubItem> getItems() {
+    public List<TvMenuMovSubItem> getItems() {
         return items;
     }
 }

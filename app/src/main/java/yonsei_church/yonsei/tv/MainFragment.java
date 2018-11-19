@@ -31,6 +31,7 @@ import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -59,10 +60,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import yonsei_church.yonsei.tv.api.APIClient;
 import yonsei_church.yonsei.tv.api.APIInterface;
+import yonsei_church.yonsei.tv.data.IconHeaderItem;
 import yonsei_church.yonsei.tv.data.TvMenuListModel;
 import yonsei_church.yonsei.tv.data.TvMenuMainItem;
+import yonsei_church.yonsei.tv.data.TvMenuMovSubItem;
 import yonsei_church.yonsei.tv.data.TvMenuSubItem;
 import yonsei_church.yonsei.tv.data.VideoItem;
+import yonsei_church.yonsei.tv.widget.WaitingDialog;
 
 public class MainFragment extends BrowseFragment {
     private static final String TAG = "MainFragment";
@@ -85,6 +89,7 @@ public class MainFragment extends BrowseFragment {
     TvMenuListModel mTvMenuListModel;
     List<TvMenuMainItem> menuList = null;
     List<TvMenuSubItem> subMenuList = null;
+    List<TvMenuMovSubItem> subMenuMovList = null;
     List<VideoItem> videoList = null;
 
     ArrayObjectAdapter rowsAdapter;
@@ -174,6 +179,13 @@ public class MainFragment extends BrowseFragment {
         setBrandColor(ContextCompat.getColor(getActivity(), R.color.fastlane_background));
         // set search icon color
         setSearchAffordanceColor(ContextCompat.getColor(getActivity(), R.color.search_opaque));
+
+        /*setHeaderPresenterSelector(new PresenterSelector() {
+            @Override
+            public Presenter getPresenter(Object o) {
+                return new IconHeaderItemPresenter();
+            }
+        });*/
     }
 
     private void setupEventListeners() {
@@ -266,6 +278,7 @@ public class MainFragment extends BrowseFragment {
 
     final Handler getTvListHandler = new Handler() {
         public void handleMessage(Message msg) {
+
             final int curPage = Integer.parseInt(mPage) + 1;
             apiInterface = APIClient.getClient().create(APIInterface.class);
             Call<List<VideoItem>> call = apiInterface.getTvList("010535483624931", curPage+"", mKey);
@@ -338,6 +351,7 @@ public class MainFragment extends BrowseFragment {
                 listRowAdapter.add(list.get(j % 5));
             }*/
             HeaderItem header = new HeaderItem(i, list.get(i).getCategory());
+
             rowsAdapter.add(new ListRow(header, listRowAdapter));
         }
 
@@ -354,16 +368,18 @@ public class MainFragment extends BrowseFragment {
     }
 
     public void requestTvMenu(String mt) {
+        WaitingDialog.showWaitingDialog(getContext());
         mt = "010535483624931";
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<List<TvMenuMainItem>> call = apiInterface.getTvMenuMainItemList(mt);
+        Call<List<TvMenuMainItem>> call = apiInterface.getTvMenuMovMainItemList(mt);
         call.enqueue(new Callback<List<TvMenuMainItem>>() {
             @Override
             public void onResponse(Call<List<TvMenuMainItem>> call, Response<List<TvMenuMainItem>> response) {
                 menuList = response.body();
 
                 loadTVRows();
+                WaitingDialog.cancelWaitingDialog();
             }
             @Override
             public void onFailure(Call<List<TvMenuMainItem>> call, Throwable t) {
@@ -428,13 +444,76 @@ public class MainFragment extends BrowseFragment {
 
         int headerIdx = 0;
         for (int i = 0; i < menuList.size(); i++) {
+            //HeaderItem header = new HeaderItem(headerIdx, menuList.get(i).getCategory());
+            IconHeaderItem header = new IconHeaderItem(headerIdx, menuList.get(i).getCategory(), R.drawable.empty, 25);
+            ArrayObjectAdapter cardRowAdapter = new ArrayObjectAdapter(cardPresenter);
+            rowsAdapter.add(new ListRow(header, cardRowAdapter));
+            headerIdx++;
+
+            if (null != menuList.get(i).getItems() && menuList.get(i).getItems().size() > 0) {
+                for (int j = 0; j < menuList.get(i).getItems().size(); j++) {
+                    subMenuMovList =  menuList.get(i).getItems();
+                    //final HeaderItem subHeader = new HeaderItem(headerIdx, "    " + subMenuMovList.get(j).getCategory2());
+                    IconHeaderItem subHeader = new IconHeaderItem(headerIdx, "    " + subMenuMovList.get(j).getCategory2(), R.drawable.empty, 20);
+                    headerIdx++;
+                    try {
+                        final String key2 = subMenuMovList.get(j).getKey2();
+                        CardTVPresenter cardSubPresenter = new CardTVPresenter();
+                        ArrayObjectAdapter cardSubRowAdapter = new ArrayObjectAdapter(cardSubPresenter);
+                        if (null != subMenuMovList.get(j).getVideos() && subMenuMovList.get(j).getVideos().size() > 0) {
+                            for (int k = 0; k < subMenuMovList.get(j).getVideos().size(); k++) {
+                                cardSubRowAdapter.add(subMenuMovList.get(j).getVideos().get(k));
+                                subMenuMovList.get(j).getVideos().get(k).setKey(key2);
+                                subMenuMovList.get(j).getVideos().get(k).setPage("1");
+                            }
+                            rowsAdapter.add(new ListRow(subHeader, cardSubRowAdapter));
+                        }
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            } else {
+            }
+        }
+
+
+/*
+        GridItemPresenter mGridPresenter = new GridItemPresenter();
+        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+        rowsAdapter.add(new ListRow(gridItemPresenterHeader, gridRowAdapter));
+*/
+
+        IconHeaderItem gridItemPresenterHeader = new IconHeaderItem(headerIdx, "라이브 생방송", R.drawable.ic_launcher, 20);
+        ArrayObjectAdapter cardRowAdapter = new ArrayObjectAdapter(cardPresenter);
+        rowsAdapter.add(new ListRow(gridItemPresenterHeader, cardRowAdapter));
+
+        /*HeaderItem gridHeader = new HeaderItem(headerIdx, "라이브 생방송");
+
+        GridItemPresenter mGridPresenter = new GridItemPresenter();
+        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+        //gridRowAdapter.add(getResources().getString(R.string.grid_view));
+        //gridRowAdapter.add(getString(R.string.error_fragment));
+        //gridRowAdapter.add(getResources().getString(R.string.personal_settings));
+        rowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));*/
+
+        setAdapter(rowsAdapter);
+    }
+
+    /*private void loadTVRows() {
+        rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+        CardTVPresenter cardPresenter = new CardTVPresenter();
+        //ArrayObjectAdapter cardRowAdapter = new ArrayObjectAdapter(cardPresenter);
+
+        int headerIdx = 0;
+        for (int i = 0; i < menuList.size(); i++) {
             HeaderItem header = new HeaderItem(headerIdx, menuList.get(i).getCategory());
             ArrayObjectAdapter cardRowAdapter = new ArrayObjectAdapter(cardPresenter);
             //PaginationAdapter cardRowAdapter = new PaginationAdapter(getContext(), cardPresenter);
             rowsAdapter.add(new ListRow(header, cardRowAdapter));
             headerIdx++;
 
-            /*if (headerIdx > 3) break;*/
+            *//*if (headerIdx > 3) break;*//*
 
             if (null != menuList.get(i).getItems() && menuList.get(i).getItems().size() > 0) {
                 for (int j = 0; j < menuList.get(i).getItems().size(); j++) {
@@ -489,16 +568,8 @@ public class MainFragment extends BrowseFragment {
         }
 
         setAdapter(rowsAdapter);
-    }
+    }*/
 
-    public void addAllItems(List<?> items) {
-
-    }
-
-
-    public List<?> getAllItems() {
-        return null;
-    }
 
     private class NetworkCall extends AsyncTask<Call, Void, String> {
 

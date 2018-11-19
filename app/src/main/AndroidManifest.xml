@@ -37,8 +37,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailsActivity" />
-        <activity android:name=".PlaybackActivity" />
+        <activity
+            android:name=".DetailsActivity"
+            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".PlaybackActivity"
+            android:screenOrientation="landscape" />
         <activity android:name=".BrowseErrorActivity" />
     </application>
 

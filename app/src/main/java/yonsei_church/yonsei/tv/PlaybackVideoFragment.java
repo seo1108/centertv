@@ -56,12 +56,21 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         mTransportControlGlue.setTitle(movie.getTitle());
         //mTransportControlGlue.setSubtitle(movie.getTitle());
         mTransportControlGlue.playWhenPrepared();
-        String videoId = movie.getUrl().substring(movie.getUrl().lastIndexOf("/") + 1);
-        Log.d("VIMEOPLAYER", videoId + "__" + movie.getUrl());
 
-        String playurl = VimeoAPI.vimeoUrl(videoId);
+        if (movie.getUrl().contains("mp4")) {
+            playerAdapter.setDataSource(Uri.parse(movie.getUrl()));
+        } else {
+            try {
+                String videoId = movie.getUrl().substring(movie.getUrl().lastIndexOf("/") + 1);
+                String playurl = VimeoAPI.vimeoUrl(videoId);
+                playerAdapter.setDataSource(Uri.parse(playurl));
+            } catch (Exception ex) {
+                Log.d("PLAYBACK", "재생 에러입니다. " + ex.toString());
+            }
+        }
+        //playerAdapter.setDataSource(Uri.parse("http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8"));
 
-        playerAdapter.setDataSource(Uri.parse(playurl));
+
 
 
         //playerAdapter.setDataSource(Uri.parse("https://player.vimeo.com/external/296317003.sd.mp4?s=906fbda76388c0e6974dc95d98ae7c1863be49bd&profile_id=164"));

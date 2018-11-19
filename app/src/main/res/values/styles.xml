@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="@style/Theme.Leanback" />
+    <style name="AppTheme" parent="@style/Theme.Leanback" >
+        <!--<item name="headerStyle">@style/MyHeaderStyle</item>-->
+    </style>
+
+    <style name="MyHeaderStyle" parent="@style/Widget.Leanback.Header" >
+        <item name="android:textAppearance">@style/MyHeaderStyle.MyHeaderText</item>
+    </style>
+
+    <style name="MyHeaderStyle.MyHeaderText" parent="TextAppearance.Leanback.Header">
+        <item name="android:textSize">30dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>
