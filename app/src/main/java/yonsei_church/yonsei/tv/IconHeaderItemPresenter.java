@@ -44,7 +44,7 @@ public class IconHeaderItemPresenter extends RowHeaderPresenter {
         int iconResId = iconHeaderItem.getIconResId();
 
         if( iconResId != IconHeaderItem.ICON_NONE) { // Show icon only when it is set.
-            Drawable icon = rootView.getResources().getDrawable(iconResId, null);
+            Drawable icon = rootView.getResources().getDrawable(iconResId);
             iconView.setImageDrawable(icon);
         }
 

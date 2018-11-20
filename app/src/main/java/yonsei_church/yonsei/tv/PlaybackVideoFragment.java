@@ -54,15 +54,17 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         mTransportControlGlue = new PlaybackTransportControlGlue<>(getActivity(), playerAdapter);
         mTransportControlGlue.setHost(glueHost);
         mTransportControlGlue.setTitle(movie.getTitle());
-        //mTransportControlGlue.setSubtitle(movie.getTitle());
+        mTransportControlGlue.setSubtitle("    ");
         mTransportControlGlue.playWhenPrepared();
-
+        Log.d("PLAYBACKURL", movie.getUrl());
         if (movie.getUrl().contains("mp4")) {
             playerAdapter.setDataSource(Uri.parse(movie.getUrl()));
         } else {
             try {
+
                 String videoId = movie.getUrl().substring(movie.getUrl().lastIndexOf("/") + 1);
                 String playurl = VimeoAPI.vimeoUrl(videoId);
+                Log.d("PLAYBACKURL", playurl);
                 playerAdapter.setDataSource(Uri.parse(playurl));
             } catch (Exception ex) {
                 Log.d("PLAYBACK", "재생 에러입니다. " + ex.toString());

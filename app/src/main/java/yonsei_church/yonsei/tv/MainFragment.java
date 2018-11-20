@@ -169,7 +169,7 @@ public class MainFragment extends BrowseFragment {
 
     private void setupUIElements() {
         setBadgeDrawable(getActivity().getResources().getDrawable(
-                R.drawable.ic_launcher));
+                R.drawable.tv_logo_white_small));
         setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent
         // over title
         setHeadersState(HEADERS_ENABLED);
@@ -193,8 +193,8 @@ public class MainFragment extends BrowseFragment {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Implement your own in-app search", Toast.LENGTH_LONG)
-                        .show();
+/*                Toast.makeText(getActivity(), "Implement your own in-app search", Toast.LENGTH_LONG)
+                        .show();*/
             }
         });
 
@@ -232,6 +232,7 @@ public class MainFragment extends BrowseFragment {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
+
             if (item instanceof VideoItem) {
                 VideoItem movie = (VideoItem) item;
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
@@ -261,6 +262,7 @@ public class MainFragment extends BrowseFragment {
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
+
             if (item instanceof VideoItem) {
                 final ListRow listRow = (ListRow) row;
                 updateRowAdapter = (ArrayObjectAdapter) listRow.getAdapter();
@@ -368,7 +370,7 @@ public class MainFragment extends BrowseFragment {
     }
 
     public void requestTvMenu(String mt) {
-        WaitingDialog.showWaitingDialog(getContext());
+        WaitingDialog.showWaitingDialog(getActivity());
         mt = "010535483624931";
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
@@ -445,7 +447,7 @@ public class MainFragment extends BrowseFragment {
         int headerIdx = 0;
         for (int i = 0; i < menuList.size(); i++) {
             //HeaderItem header = new HeaderItem(headerIdx, menuList.get(i).getCategory());
-            IconHeaderItem header = new IconHeaderItem(headerIdx, menuList.get(i).getCategory(), R.drawable.empty, 25);
+            IconHeaderItem header = new IconHeaderItem(headerIdx, menuList.get(i).getCategory(), R.drawable.empty, 22);
             ArrayObjectAdapter cardRowAdapter = new ArrayObjectAdapter(cardPresenter);
             rowsAdapter.add(new ListRow(header, cardRowAdapter));
             headerIdx++;
@@ -454,7 +456,7 @@ public class MainFragment extends BrowseFragment {
                 for (int j = 0; j < menuList.get(i).getItems().size(); j++) {
                     subMenuMovList =  menuList.get(i).getItems();
                     //final HeaderItem subHeader = new HeaderItem(headerIdx, "    " + subMenuMovList.get(j).getCategory2());
-                    IconHeaderItem subHeader = new IconHeaderItem(headerIdx, "    " + subMenuMovList.get(j).getCategory2(), R.drawable.empty, 20);
+                    IconHeaderItem subHeader = new IconHeaderItem(headerIdx, "   " + subMenuMovList.get(j).getCategory2(), R.drawable.empty, 17);
                     headerIdx++;
                     try {
                         final String key2 = subMenuMovList.get(j).getKey2();
@@ -478,24 +480,24 @@ public class MainFragment extends BrowseFragment {
         }
 
 
-/*
-        GridItemPresenter mGridPresenter = new GridItemPresenter();
-        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-        rowsAdapter.add(new ListRow(gridItemPresenterHeader, gridRowAdapter));
-*/
 
-        IconHeaderItem gridItemPresenterHeader = new IconHeaderItem(headerIdx, "라이브 생방송", R.drawable.ic_launcher, 20);
+        //GridItemPresenter mGridPresenter = new GridItemPresenter();
+        //ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+        //rowsAdapter.add(new ListRow(gridItemPresenterHeader, gridRowAdapter));
+
+
+        IconHeaderItem gridItemPresenterHeader = new IconHeaderItem(headerIdx, "라이브 생방송", R.drawable.ic_launcher, 22);
         ArrayObjectAdapter cardRowAdapter = new ArrayObjectAdapter(cardPresenter);
         rowsAdapter.add(new ListRow(gridItemPresenterHeader, cardRowAdapter));
 
-        /*HeaderItem gridHeader = new HeaderItem(headerIdx, "라이브 생방송");
+        //HeaderItem gridHeader = new HeaderItem(headerIdx, "라이브 생방송");
 
-        GridItemPresenter mGridPresenter = new GridItemPresenter();
-        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+        //GridItemPresenter mGridPresenter = new GridItemPresenter();
+        //ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
         //gridRowAdapter.add(getResources().getString(R.string.grid_view));
         //gridRowAdapter.add(getString(R.string.error_fragment));
         //gridRowAdapter.add(getResources().getString(R.string.personal_settings));
-        rowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));*/
+        //rowsAdapter.add(new ListRow(gridHeader, gridRowAdapter));
 
         setAdapter(rowsAdapter);
     }
